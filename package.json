@@ -9,8 +9,10 @@
   "author": "julienhache",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^10.0.0",
     "ganache-cli": "^6.12.2",
     "keccak256": "^1.0.6",
-    "merkletreejs": "^0.2.27"
+    "merkletreejs": "^0.2.27",
+    "nft.storage": "^5.2.0"
   }
 }
