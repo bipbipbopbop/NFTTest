@@ -1,3 +1,8 @@
+/**
+ * NB: the nft.storage API seems a bit too complicated for a standard ERC-721
+ * NFT folder. This script is unfinished as we used instead Pinata.
+ * See https://www.pinata.cloud/
+ */
 import { NFTStorage, File } from 'nft.storage';
 
 import fs from "fs";

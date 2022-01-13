@@ -6,7 +6,7 @@ import "./Library/utils/MerkleProof.sol";
 import "./Library/utils/Ownable.sol";
 
 contract NFT is ERC721Enumerable, Ownable {
-    uint256 public constant MAX_SUPPLY = 10;
+    uint256 public constant MAX_SUPPLY = 8;
     bytes32 public merkleRoot;
     string private _baseURIextended;
     mapping(address => uint256) public whitelistClaimed;
@@ -33,8 +33,9 @@ contract NFT is ERC721Enumerable, Ownable {
         require(onAllowList(msg.sender, merkleProof), "Not on allow list.");
         require(whitelistClaimed[msg.sender] == 0, "Token already claimed.");
 
+        uint256 mintIndex = totalSupply() + 1;
         whitelistClaimed[msg.sender] += 1;
-        _safeMint(msg.sender, ts);
+        _safeMint(msg.sender, mintIndex);
     }
 
     function setBaseURI(string memory baseURI_) external onlyOwner {
@@ -43,5 +44,19 @@ contract NFT is ERC721Enumerable, Ownable {
 
     function _baseURI() internal view virtual override returns (string memory) {
         return _baseURIextended;
+    }
+
+    /**
+     * Optional override for modifying the token URI before return.
+     */
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        virtual
+        override(ERC721)
+        returns (string memory)
+    {
+        string memory uri = super.tokenURI(tokenId);
+        return bytes(uri).length > 0 ? string(abi.encodePacked(uri, ".png")) : "";
     }
 }
