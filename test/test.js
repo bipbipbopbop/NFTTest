@@ -86,6 +86,21 @@ contract("NFT", (accounts) => {
 			assert.equal(await NFTInstance.totalSupply.call(), 2);
 		});
 
+		it("account 10 should not mint a token", async () => {
+			const account = accounts[9];
+			const merkleProof = whitelistMerkleTree.getHexProof(keccak256(account));
+			NFTInstance.mint(merkleProof, { from: account })
+				.then((result) => {
+					assert(false, "Error: The account " + account + " is not in the whitelist.");
+				}, (error) => {
+					;//we expect it to fail
+				});
+
+			assert.equal(await NFTInstance.balanceOf.call(account), 0);
+			assert.equal(await NFTInstance.whitelistClaimed.call(account), "0");
+			assert.equal(await NFTInstance.totalSupply.call(), 2);
+		});
+
 		it("should mint the remaining tokens", async () => {
 			const accounts = whitelistAddresses.slice(2);
 			for (account of accounts) {
@@ -131,6 +146,73 @@ contract("NFT", (accounts) => {
 				assert.equal(link, "ipfs://QmRzUpzWqjYtPetV5xhrWgcEpXXHeLMJ8wDaHfuvpPEJvf/1.png");
 				console.log("Check the link manually: " + link);
 			})
+		});
+
+		describe("transfer tests", async () => {
+			it("should not transfer a token without approval", async () => {
+				const accountFrom = accounts[1];
+				const accountTo = accounts[2];
+				await NFTInstance.safeTransferFrom(accountFrom, accountTo, 1, { from: accounts[0] })
+					.then((result) => {
+						assert(false, "Error: the transfer caller has not been approved yet.");
+					}, (error) => {
+						;//we expect it to fail
+					});
+
+				assert.equal(await NFTInstance.balanceOf.call(accountFrom), 1);
+				assert.equal(await NFTInstance.balanceOf.call(accountTo), 1);
+				assert.equal(await NFTInstance.whitelistClaimed.call(accountFrom), "1");
+				assert.equal(await NFTInstance.whitelistClaimed.call(accountTo), "1");
+				assert.equal(await NFTInstance.totalSupply.call(), 8);
+			});
+
+			it("account 2 should transfer token 1 to account 10", async () => {
+				const accountFrom = accounts[1];
+				const accountTo = accounts[9];
+				await NFTInstance.safeTransferFrom(accountFrom, accountTo, 1, { from: accountFrom });
+
+				assert.equal(await NFTInstance.balanceOf.call(accountFrom), 0);
+				assert.equal(await NFTInstance.balanceOf.call(accountTo), 1);
+				assert.equal(await NFTInstance.whitelistClaimed.call(accountFrom), "1");
+				assert.equal(await NFTInstance.whitelistClaimed.call(accountTo), "0");
+				assert.equal(await NFTInstance.totalSupply.call(), 8);
+			});
+
+			it("account 3 should transfer token 2 to account 10 on account 1 behalf", async () => {
+				// accountFrom is owner
+				const accountFrom = accounts[2];
+				const accountTo = accounts[9];
+				const accountApproved = accounts[0];
+				await NFTInstance.approve(accountApproved, "2", { from: accountFrom })
+				await NFTInstance.safeTransferFrom(accountFrom, accountTo, 2, { from: accountApproved });
+
+				assert.equal(await NFTInstance.balanceOf.call(accountFrom), 0);
+				assert.equal(await NFTInstance.balanceOf.call(accountTo), 2);
+				assert.equal(await NFTInstance.whitelistClaimed.call(accountFrom), "1");
+				assert.equal(await NFTInstance.whitelistClaimed.call(accountTo), "0");
+				assert.equal(await NFTInstance.totalSupply.call(), 8);
+			});
+
+
+			it("account 10 should transfer its 2 tokens to account 2 & 3 on account 5 behalf", async () => {
+				// accountFrom is owner
+				const accountFrom = accounts[9];
+				const accountTo1 = accounts[1];
+				const accountTo2 = accounts[2];
+				const accountApproved = accounts[4];
+				await NFTInstance.setApprovalForAll(accountApproved, true, { from: accountFrom })
+				await NFTInstance.safeTransferFrom(accountFrom, accountTo1, 1, { from: accountApproved });
+				await NFTInstance.safeTransferFrom(accountFrom, accountTo2, 2, { from: accountApproved });
+
+				assert.equal(await NFTInstance.balanceOf.call(accountFrom), 0);
+				assert.equal(await NFTInstance.balanceOf.call(accountTo1), 1);
+				assert.equal(await NFTInstance.balanceOf.call(accountTo2), 1);
+				assert.equal(await NFTInstance.whitelistClaimed.call(accountFrom), "0");
+				assert.equal(await NFTInstance.whitelistClaimed.call(accountTo1), "1");
+				assert.equal(await NFTInstance.whitelistClaimed.call(accountTo2), "1");
+				assert.equal(await NFTInstance.totalSupply.call(), 8);
+			});
+
 		});
 	})
 });
