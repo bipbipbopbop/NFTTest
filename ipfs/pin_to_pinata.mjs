@@ -11,9 +11,9 @@ dotenv.config();
 
 const pinToPinata = async () => {
   const myArgs = process.argv.slice(2);
-  if (myArgs.length != 1) {
+  if (myArgs.length != 2) {
     console.log(
-      "Error: you must provide one argument: the CID of your data to pin."
+      "Error: you must provide two argument: the CID of your data to pin AND a folder name for deployment."
     );
     return;
   }
@@ -37,7 +37,7 @@ const pinToPinata = async () => {
   // Pin the data to Pinata
   const pinnedData = await ipfs.pin.remote.add(IPFS.CID.parse(myArgs[0]), {
     service: "pinata",
-    name: "NFT Test",
+    name: myArgs[1],
   });
 
   console.log("done.");

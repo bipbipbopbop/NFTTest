@@ -49,5 +49,22 @@ npx go-ipfs add -r images/
 
 # Images have been added to our IPFS node, but we need to 'pin' them: to be permanently accessible.
 # We will use pinata.cloud services for that, see the following script:
-node pin_to_pinata.mjs <Directory CID>
+node pin_to_pinata.mjs <Directory CID> <pin name>
+```
+
+---
+
+Now that the images are deployed, we will generate and deploy the metadata.
+```sh
+## Start from the root directory of this project ##
+
+# export everytime you reset your terminal, or once in a .rc file
+export IPFS_PATH=`pwd`/ipfs/.go-ipfs
+cd ipfs/
+
+node generate_metadata.mjs <Images directory CID>
+npx go-ipfs add -r metadata/
+# Save the directory CID for the next commands.
+
+node pin_to_pinata.mjs <Metadata Directory CID> <pin name>
 ```
