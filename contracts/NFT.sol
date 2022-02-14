@@ -57,6 +57,6 @@ contract NFT is ERC721Enumerable, Ownable {
         returns (string memory)
     {
         string memory uri = super.tokenURI(tokenId);
-        return bytes(uri).length > 0 ? string(abi.encodePacked(uri, ".png")) : "";
+        return bytes(uri).length > 0 ? string(abi.encodePacked(uri, ".json")) : "";
     }
 }
