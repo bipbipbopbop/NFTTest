@@ -15,9 +15,10 @@ dotenv.config();
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
-    development: {
-      url: "http://127.0.0.1:8545/",
-    },
+    // NB: "localhost" network already does that
+    // development: {
+    //   url: "http://127.0.0.1:8545/",
+    // },
   },
   // comment this or set REPORT_GAS env variable to enable the gasReporter
   gasReporter: {

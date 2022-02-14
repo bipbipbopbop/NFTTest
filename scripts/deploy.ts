@@ -1,10 +1,8 @@
 /**
- * usage: `hardat run <this file path>`
+ * usage: `hardat run [--network <Your Network>] <this file path>`
  * 
- * NB: It will run on a new fork by default. To use another one, add this env variable first:
- * `export HARDHAT_NETWORK=development`
- * and dont forget to run your local network:
- * `hardhat node`
+ * NB: If you don't provide a network, it will run on a new temporary fork by default.
+ * `localhost` is a default name to connect to your local fork, run it with `hardhat node`
  */
 import { ethers } from "hardhat";
 
