@@ -10,6 +10,7 @@ Source:
 ---
 
 ## 0: Initialize the IPFS repository
+
 First, we initialize our IPFS node:
 ```sh
 ## Start from the root directory of this project ##
@@ -67,4 +68,19 @@ npx go-ipfs add -r metadata/
 # Save the directory CID for the next commands.
 
 node pin_to_pinata.mjs <Metadata Directory CID> <pin name>
+```
+
+# Additional commands for IPFS
+
+Do not hesitate to read the [IPFS CLI complete documentation](https://docs.ipfs.io/reference/cli/)
+
+```sh
+# list all available hashes in node (without the corresponding file mapping)
+npx go-ipfs pin ls
+
+# list all file & hashes under a hash (directory only)
+npx go-ipfs ls <Your Root Resource Hash>
+
+# download file(s) from hash (works with directory)
+npx go-ipfs get <Your Root Resource Hash> --output <Output Path>
 ```
