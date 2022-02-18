@@ -15,26 +15,18 @@ import path from "path";
  *     image: "URI"
  * }
  */
-const generateMetadata = () => {
-  const myArgs = process.argv.slice(2);
-  if (myArgs.length != 1) {
-    console.log(
-      "Error: you must provide one argument: the CID of the images' directory stored on IPFS."
-    );
-    return;
-  }
-
+export const generateMetadata = (CID: string, workingDir: string) => {
   // prepare the metadata
   const title = "NFT_Test Metadata";
   const name = "NFT_Test";
   const description = "This is a test about deploying NFT on blockchain!";
-  const DirectoryCID = myArgs[0];
+  const DirectoryCID = CID;
 
   // create output folder
   fs.mkdirSync(path.resolve("metadata"), { recursive: true });
 
   // get all NFT (images) list
-  const files = fs.readdirSync(path.resolve("images/"));
+  const files = fs.readdirSync(path.resolve(workingDir, "images"));
   for (const elem of files) {
     const URI = "ipfs://" + DirectoryCID + "/" + elem;
     const metadata = {
@@ -46,10 +38,24 @@ const generateMetadata = () => {
 
     // generate the metadata, one per image
     fs.writeFileSync(
-      path.resolve("metadata/", path.parse(elem).name + ".json"),
+      path.resolve(workingDir, "metadata/", path.parse(elem).name + ".json"),
       JSON.stringify(metadata)
     );
   }
 };
 
-generateMetadata();
+const _generateMetadata = () => {
+  const myArgs = process.argv.slice(2);
+  if (myArgs.length != 1) {
+    console.log(
+      "Error: you must provide one argument: the CID of the images' directory stored on IPFS."
+    );
+    return;
+  };
+  generateMetadata(myArgs[0], path.resolve("./"));
+};
+
+// check if this file is run directly
+if (require.main === module) {
+  _generateMetadata();
+}

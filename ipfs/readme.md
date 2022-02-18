@@ -1,6 +1,8 @@
 # How to run the deploy scripts
 
-All the IPFS-related command will be run from the local `go-ipfs` module, so that it will not conflict with any user environment. However it can be rather slow, so be patient!
+_NB: This file documents how to deploy manually, using the scripts present in this folder. See the `scripts` folder for more automatic process..._
+
+All the IPFS-related command will be run from the local `go-ipfs` module (using `npx`), so that it will not conflict with any user environment. However it can be rather slow, so be patient!
 
 Source:
 - The [IPFS CLI quick start documentation](https://docs.ipfs.io/how-to/command-line-quick-start/)
@@ -50,7 +52,7 @@ npx go-ipfs add -r images/
 
 # Images have been added to our IPFS node, but we need to 'pin' them: to be permanently accessible.
 # We will use pinata.cloud services for that, see the following script:
-node pin_to_pinata.mjs <Directory CID> <pin name>
+npx ts-node pin_to_pinata.ts <Directory CID> <pin name>
 ```
 
 ---
@@ -63,11 +65,11 @@ Now that the images are deployed, we will generate and deploy the metadata.
 export IPFS_PATH=`pwd`/ipfs/.go-ipfs
 cd ipfs/
 
-node generate_metadata.mjs <Images directory CID>
+npx ts-node generate_metadata.ts <Images directory CID>
 npx go-ipfs add -r metadata/
 # Save the directory CID for the next commands.
 
-node pin_to_pinata.mjs <Metadata Directory CID> <pin name>
+npx ts-node pin_to_pinata.ts <Metadata Directory CID> <pin name>
 ```
 
 # Additional commands for IPFS

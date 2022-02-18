@@ -9,14 +9,7 @@ import * as IPFS from "ipfs-http-client";
 import dotenv from "dotenv";
 dotenv.config();
 
-const pinToPinata = async () => {
-  const myArgs = process.argv.slice(2);
-  if (myArgs.length != 2) {
-    console.log(
-      "Error: you must provide two argument: the CID of your data to pin AND a folder name for deployment."
-    );
-    return;
-  }
+export const pinToPinata = async (CID: string, pinName: string) => {
   if (process.env.PINATA_JWT === undefined) {
     console.log("Error: you must add a PINATA_JWT variable in .env");
     return;
@@ -35,12 +28,23 @@ const pinToPinata = async () => {
   }
 
   // Pin the data to Pinata
-  const pinnedData = await ipfs.pin.remote.add(IPFS.CID.parse(myArgs[0]), {
+  const pinnedData = await ipfs.pin.remote.add(IPFS.CID.parse(CID), {
     service: "pinata",
-    name: myArgs[1],
+    name: pinName,
   });
+  return pinnedData;
+};
 
+const _pinToPinata = async () => {
+  const myArgs = process.argv.slice(2);
+  if (myArgs.length != 2) {
+    console.log(
+      "Error: you must provide two argument: the CID of your data to pin AND a folder name for deployment."
+    );
+    return;
+  }
+  await pinToPinata(myArgs[0], myArgs[1]);
   console.log("done.");
 };
 
-pinToPinata();
+_pinToPinata();
