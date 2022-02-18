@@ -1,8 +1,16 @@
 # Initialization
 
+First, initialize the repo:
 ```sh
 npm install
 ```
+Then, You will need to create an API key to connect to your pinata.cloud storage. Follow [this link](https://docs.pinata.cloud/api-pinning/pinning-services-api) for more information, create a new key [here](https://app.pinata.cloud/keys), then add the following `.env` file to the root of this project:
+```
+PINATA_JWT=<your JWT>
+PINATA_API_KEY=<Your API Key>
+PINATA_API_SECRET=<Your API Secret>
+```
+
 ##### additional setup:
 ```sh
 
@@ -20,7 +28,9 @@ npx go-ipfs daemon
 
 # Full process: Deploy the contract and the metadata
 
-todo
+```sh
+npx hardhat run scripts/full_process.ts
+```
 
 ---
 
@@ -36,6 +46,9 @@ npx hardat compile
 # Deploy contracts (see hardhat.config.ts)
 npx hardhat deploy --network <network name>
 ```
+
+## `data/`
+this folder contains all the data that will be deployed on IPFS.
 
 ## `ipfs/`
 
