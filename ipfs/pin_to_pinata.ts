@@ -11,8 +11,7 @@ dotenv.config();
 
 export const pinToPinata = async (CID: string, pinName: string) => {
   if (process.env.PINATA_JWT === undefined) {
-    console.log("Error: you must add a PINATA_JWT variable in .env");
-    return;
+    throw new Error("Error: you must add a PINATA_JWT variable in .env");
   }
 
   const ipfs = await IPFS.create(); //fallback to default API address
@@ -47,4 +46,7 @@ const _pinToPinata = async () => {
   console.log("done.");
 };
 
-_pinToPinata();
+// check if this file is run directly
+if (require.main === module) {
+  _pinToPinata();
+}

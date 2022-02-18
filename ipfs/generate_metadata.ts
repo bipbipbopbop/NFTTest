@@ -21,9 +21,10 @@ export const generateMetadata = (CID: string, workingDir: string) => {
   const name = "NFT_Test";
   const description = "This is a test about deploying NFT on blockchain!";
   const DirectoryCID = CID;
-
+  
   // create output folder
-  fs.mkdirSync(path.resolve("metadata"), { recursive: true });
+  const outDir = path.resolve(workingDir, "metadata/");
+  fs.mkdirSync(outDir, { recursive: true });
 
   // get all NFT (images) list
   const files = fs.readdirSync(path.resolve(workingDir, "images"));
@@ -38,10 +39,11 @@ export const generateMetadata = (CID: string, workingDir: string) => {
 
     // generate the metadata, one per image
     fs.writeFileSync(
-      path.resolve(workingDir, "metadata/", path.parse(elem).name + ".json"),
+      path.resolve(outDir, path.parse(elem).name + ".json"),
       JSON.stringify(metadata)
     );
   }
+  return (outDir);
 };
 
 const _generateMetadata = () => {
@@ -52,7 +54,7 @@ const _generateMetadata = () => {
     );
     return;
   };
-  generateMetadata(myArgs[0], path.resolve("./"));
+  generateMetadata(myArgs[0], path.resolve("../data"));
 };
 
 // check if this file is run directly
