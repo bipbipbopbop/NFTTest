@@ -5,7 +5,7 @@ import assert from "assert";
 import { ethers } from "hardhat";
 import { NFT } from "../typechain";
 
-// I can't find the type appropriately
+// todo: I can't find the type appropriately from hardhat-ethers
 type SignerWithAddress = any;
 
 describe("NFT", () => {
@@ -56,7 +56,7 @@ describe("NFT", () => {
 
 		it("should set the whitelist", async () => {
 			await NFTInstance.setWhitelist(whitelistMerkleTree.getRoot());
-			assert.notEqual(await NFTInstance.merkleRoot(),
+			assert.notStrictEqual(await NFTInstance.merkleRoot(),
 				"0x0000000000000000000000000000000000000000000000000000000000000000");
 		})
 	});
@@ -65,16 +65,19 @@ describe("NFT", () => {
 		it("account 1 should mint the first token", async () => {
 			const account = whitelistAccounts[0];
 			const merkleProof = whitelistMerkleTree.getHexProof(keccak256(account.address));
+			assert.strictEqual(await NFTInstance.onAllowList(account.address, merkleProof), true);
 			await NFTInstance.connect(account).mint(merkleProof);
 
 			assert.strictEqual((await NFTInstance.balanceOf(account.address)).toNumber(), 1);
 			assert.strictEqual((await NFTInstance.whitelistClaimed(account.address)).toNumber(), 1);
 			assert.strictEqual((await NFTInstance.totalSupply()).toNumber(), 1);
+			console.log("end");
 		});
 
 		it("account 2 should mint the second token", async () => {
 			const account = whitelistAccounts[1];
 			const merkleProof = whitelistMerkleTree.getHexProof(keccak256(account.address));
+			assert.strictEqual(await NFTInstance.onAllowList(account.address, merkleProof), true);
 			await NFTInstance.connect(account).mint(merkleProof);
 
 			assert.strictEqual((await NFTInstance.balanceOf(account.address)).toNumber(), 1);
@@ -85,6 +88,7 @@ describe("NFT", () => {
 		it("account 1 should not mint another token", async () => {
 			const account = whitelistAccounts[0];
 			const merkleProof = whitelistMerkleTree.getHexProof(keccak256(account.address));
+			assert.strictEqual(await NFTInstance.onAllowList(account.address, merkleProof), true);
 			NFTInstance.connect(account).mint(merkleProof)
 				.then((result) => {
 					assert(false, "Error: The account " + account.address + " has already minted a token.");
@@ -100,6 +104,7 @@ describe("NFT", () => {
 		it("account 10 should not mint a token", async () => {
 			const account = accounts[9];
 			const merkleProof = whitelistMerkleTree.getHexProof(keccak256(account.address));
+			assert.strictEqual(await NFTInstance.onAllowList(account.address, merkleProof), false);
 			NFTInstance.connect(account).mint(merkleProof)
 				.then((result) => {
 					assert(false, "Error: The account " + account.address + " is not in the whitelist.");
@@ -116,6 +121,7 @@ describe("NFT", () => {
 			const accounts = whitelistAccounts.slice(2);
 			for (const account of accounts) {
 				const merkleProof = whitelistMerkleTree.getHexProof(keccak256(account.address));
+				assert.strictEqual(await NFTInstance.onAllowList(account.address, merkleProof), true);
 				await NFTInstance.connect(account).mint(merkleProof);
 				assert.strictEqual((await NFTInstance.balanceOf(account.address)).toNumber(), 1);
 				assert.strictEqual((await NFTInstance.whitelistClaimed(account.address)).toNumber(), 1);
@@ -224,7 +230,6 @@ describe("NFT", () => {
 				assert.strictEqual((await NFTInstance.whitelistClaimed(accountTo2.address)).toNumber(), 1);
 				assert.strictEqual((await NFTInstance.totalSupply()).toNumber(), 8);
 			});
-
 		});
 	})
 });

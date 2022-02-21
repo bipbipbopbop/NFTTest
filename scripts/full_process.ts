@@ -10,7 +10,6 @@ import { pinToPinata } from "../ipfs/pin_to_pinata";
 import path from "path";
 import fs from "fs";
 import Ctl from "ipfsd-ctl";
-import { assert } from "console";
 import { ImportCandidate} from "ipfs-core-types/types/src/utils";
 import { AddResult } from "ipfs-core-types/src/root";
 
@@ -75,7 +74,18 @@ const deployData = async () => {
 }
 
 async function main() {
+  const signers = await ethers.getSigners();
+  const signer = signers[0];
+  const owner = await signer.getAddress();
+
   await deployData();
+
+  const NFT = await ethers.getContractFactory("NFT");
+  const NFTInstance = await NFT.connect(signer).deploy();
+
+  await NFTInstance.deployed();
+
+  console.log("NFTInstance deployed to: ", NFTInstance.address);
 };
 
 main();

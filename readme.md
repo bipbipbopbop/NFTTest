@@ -10,6 +10,10 @@ PINATA_JWT=<your JWT>
 PINATA_API_KEY=<Your API Key>
 PINATA_API_SECRET=<Your API Secret>
 ```
+Furthermore, You will need to add to your `.env` file a mnemonic to be able to deploy to Polygon (visit [this website](https://iancoleman.io/bip39/) to generate a mnemonic).
+```
+POLYGON_MNEMONIC=<your mnemonic>
+```
 
 ##### additional setup:
 ```sh
@@ -20,7 +24,7 @@ npx hardhat node [--fork <JSON-RPC server url>]
 # Run a local ipfs node
 export IPFS_PATH=`pwd`/ipfs/.go-ipfs
 cd ipfs/
-npx go-ipfs init
+npx go-ipfs init#if not already done
 npx go-ipfs daemon
 ```
 
@@ -29,7 +33,10 @@ npx go-ipfs daemon
 # Full process: Deploy the contract and the metadata
 
 ```sh
-npx hardhat run scripts/full_process.ts
+npx hardhat run scripts/full_process.ts [--network <network name>]
+
+# you can also test your contract using the same network
+npx hardhat test --network <network name>
 ```
 
 ---

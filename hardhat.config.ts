@@ -15,16 +15,19 @@ dotenv.config();
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
-    // NB: "localhost" network already does that
-    // development: {
-    //   url: "http://127.0.0.1:8545/",
-    // },
+    matic: {
+      url: "https://polygon-rpc.com",
+      accounts: {
+        mnemonic: process.env!.POLYGON_MNEMONIC,
+        count: process.env.POLYGON_MNEMONIC ? 10 : 0,
+      },
+    }
   },
   // comment this or set REPORT_GAS env variable to enable the gasReporter
-  gasReporter: {
-    enabled: process.env.REPORT_GAS !== undefined,
-    currency: "USD",
-  },
+  // gasReporter: {
+  //   enabled: process.env.REPORT_GAS !== undefined,
+  //   currency: "USD",
+  // },
 };
 
 export default config;
